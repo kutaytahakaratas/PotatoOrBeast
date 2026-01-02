@@ -54,26 +54,26 @@ export const MobileBlocker = () => {
           </div>
         </div>
 
-        <h1 className="font-orbitron font-black text-4xl text-red-500 mb-2 tracking-widest uppercase glitch-text" data-text="ACCESS DENIED">
-          ACCESS DENIED
+        <h1 className="font-orbitron font-black text-4xl text-red-500 mb-2 tracking-widest uppercase glitch-text" data-text="ERİŞİM ENGELLENDİ">
+          ERİŞİM ENGELLENDİ
         </h1>
         
         <div className="h-0.5 w-full bg-red-600 mb-6 shadow-[0_0_10px_#dc2626]"></div>
 
         <h2 className="font-orbitron text-xl text-white mb-6 font-bold">
-          SYSTEM INCOMPATIBLE
+          SİSTEM UYUMSUZ
         </h2>
 
         <p className="font-space-mono text-gray-300 mb-8 leading-relaxed text-sm">
-          <span className="text-red-400 font-bold block mb-2">[ERROR_CODE: MOBILE_DETECTED]</span>
+          <span className="text-red-400 font-bold block mb-2">[HATA_KODU: MOBİL_TESPİT_EDİLDİ]</span>
           Bu benchmark, yalnızca yüksek performanslı <span className="text-white font-bold">MASAÜSTÜ (PC)</span> donanımları için tasarlanmıştır. Mobil cihaz mimarisi bu testleri çalıştırmak için yetersizdir.
         </p>
 
         <div className="bg-red-900/20 border border-red-500/50 p-4 rounded mb-8">
           <p className="font-space-mono text-xs text-red-300">
-             REQUIRED_PLATFORM: DESKTOP_WIN/MAC/LINUX<br/>
-             DETECTED_PLATFORM: MOBILE_ARM<br/>
-             STATUS: <span className="animate-pulse font-bold">LOCKED</span>
+             GEREKLİ_PLATFORM: MASAÜSTÜ_WIN/MAC/LINUX<br/>
+             TESPİT_EDİLEN_PLATFORM: MOBİL_ARM<br/>
+             DURUM: <span className="animate-pulse font-bold">KİLİTLENDİ</span>
           </p>
         </div>
 
