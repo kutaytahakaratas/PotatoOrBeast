@@ -8,6 +8,7 @@ import { BottleneckIndicator } from './components/BottleneckIndicator'
 import { ScoreComparisonCard } from './components/ScoreComparisonCard'
 import { UpgradeAdvisor } from './components/UpgradeAdvisor'
 import { ScoreCard } from './components/ScoreCard'
+import { MobileBlocker } from './components/MobileBlocker'
 
 // Test modes
 type TestMode = 'none' | 'gpu' | 'cpu' | 'full';
@@ -137,6 +138,9 @@ function App() {
   // ========== MAIN PAGE ==========
   return (
     <div className="min-h-screen relative overflow-x-hidden">
+        {/* Mobile Blocker - Blocks access on mobile/tablet */}
+        <MobileBlocker />
+
       {/* Animated Grid Background */}
       <div className="cyber-grid-bg"></div>
 
