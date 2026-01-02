@@ -180,7 +180,6 @@ export const BenchmarkScene = ({ onComplete }: BenchmarkSceneProps) => {
       }
 
       // GPU-Heavy Rotation Update
-      const time = now * 0.001;
       const orbitAngle = 0.0005; // Faster orbit
 
       // We update a subset or all depending on performance (updating all for max stress)

@@ -14,7 +14,7 @@ interface ResultModalProps {
   onClose: () => void;
 }
 
-export const ResultModal = ({ avgFps, minFps, maxFps, totalObjects, cpuScore, onRestart, onClose }: ResultModalProps) => {
+export const ResultModal = ({ avgFps, minFps: _minFps, maxFps: _maxFps, totalObjects, cpuScore, onRestart, onClose }: ResultModalProps) => {
   const [displayedScore, setDisplayedScore] = useState(0);
   const [showContent, setShowContent] = useState(false);
   const [copied, setCopied] = useState(false);
