@@ -197,23 +197,6 @@ export const GamePerformanceEstimator = ({ gpuTestScore, cpuTestScore }: GamePer
         <p className="text-center text-gray-600 text-[10px] mt-6 font-space-mono">
           ⚠️ Bu değerler GPU modelinize ({gpuName}) ve işlemci çekirdeğinize dayalı tahmini verilerdir. Sürücü sürümü ve arka plan uygulamaları performansı etkileyebilir.
         </p>
-        
-        {/* Share CTA */}
-        <div className="text-center mt-8">
-          <button 
-            onClick={() => {
-              const text = `🎮 Browser Benchmark Arena - Oyun Tahminlerim (${gpuTier} Tier):\n\n${predictions.slice(0, 4).map(g => `${getGameIcon(g.id)} ${g.title}: ${g.fpsRange}`).join('\n')}\n\nSenin sistemin bu oyunları açar mı? 👇\n#BrowserBenchmark`;
-              navigator.clipboard.writeText(text);
-              const btn = document.getElementById('share-btn');
-              if (btn) btn.innerText = 'Kopyalandı! ✅';
-              setTimeout(() => { if (btn) btn.innerText = '📋 Sonuçları Paylaş'; }, 2000);
-            }}
-            id="share-btn"
-            className="group px-8 py-3 bg-gradient-to-r from-neon-green/10 to-electric-blue/10 border border-neon-green/50 rounded-lg font-orbitron text-sm text-neon-green hover:bg-neon-green/20 transition-all duration-300 hover:shadow-[0_0_20px_rgba(57,255,20,0.3)]"
-          >
-            📋 Sonuçları Paylaş
-          </button>
-        </div>
       </div>
     </section>
   );
