@@ -343,8 +343,11 @@ function App() {
 
         {/* Footer */}
         <footer className="container mx-auto px-6 py-12 mt-20 border-t border-neon-green/20">
-          <p className="text-center text-gray-500 font-space-mono text-sm">
+          <p className="text-center text-gray-500 font-space-mono text-sm mb-3">
             Powered by <span className="text-neon-green">React</span> + <span className="text-electric-blue">Vite</span> + <span className="text-cyber-purple">Three.js</span>
+          </p>
+          <p className="text-center text-gray-600 font-space-mono text-xs">
+            System Engineered by Kutay
           </p>
         </footer>
       </div>

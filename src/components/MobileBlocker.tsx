@@ -53,11 +53,11 @@ export const MobileBlocker = () => {
       // Fade in effect
       setTimeout(() => setIsVisible(true), 100);
       
-      // Random glitch effect
+      // Random glitch effect - every 2-4 seconds
       const glitchInterval = setInterval(() => {
         setGlitchActive(true);
         setTimeout(() => setGlitchActive(false), 150);
-      }, 3000 + Math.random() * 2000);
+      }, 2000 + Math.random() * 2000);
 
       return () => clearInterval(glitchInterval);
     }
@@ -176,7 +176,7 @@ export const MobileBlocker = () => {
             textShadow: '0 0 5px #ff003c',
           }}
         >
-          ⚠ SİNYAL GÜCÜ YETERSİZ ⚠
+          ⚠ SİSTEM UYUMSUZ ⚠
         </h2>
 
         {/* Divider line */}
@@ -230,7 +230,7 @@ export const MobileBlocker = () => {
           </div>
         </div>
 
-        {/* PC Master Race tagline */}
+        {/* Potato Or Beast tagline */}
         <p 
           className="font-space-mono text-xs italic tracking-widest"
           style={{
@@ -238,17 +238,25 @@ export const MobileBlocker = () => {
             textShadow: '0 0 5px rgba(255, 0, 60, 0.3)',
           }}
         >
-          PC Master Race Only.
+          • Potato Or Beast ? •
         </p>
 
         {/* Decorative bottom line */}
-        <div className="flex items-center justify-center gap-2 mt-8">
+        <div className="flex items-center justify-center gap-2 mt-6">
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" style={{ boxShadow: '0 0 10px #ff003c' }} />
           <span className="font-space-mono text-[10px] uppercase tracking-widest" style={{ color: '#333' }}>
-            POTATO OR BEAST • BENCHMARK SUITE
+            BENCHMARK SUITE
           </span>
           <div className="w-2 h-2 rounded-full bg-red-500 animate-pulse" style={{ boxShadow: '0 0 10px #ff003c' }} />
         </div>
+
+        {/* System Engineered by Kutay */}
+        <p 
+          className="font-space-mono text-[10px] mt-6"
+          style={{ color: '#2a2a2a' }}
+        >
+          System Engineered by Kutay
+        </p>
       </div>
 
       {/* === CSS KEYFRAMES (inline style tag) === */}
