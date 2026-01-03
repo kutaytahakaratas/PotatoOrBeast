@@ -1,5 +1,4 @@
-import { useRef, useEffect, useState, useMemo } from 'react';
-import html2canvas from 'html2canvas';
+import { useEffect, useState, useMemo } from 'react';
 import { calculateScore, getRank, getScoreGradient } from '../utils/scoring';
 import { getSystemSpecs, type SystemSpecs } from '../utils/systemDetection';
 import { getGPUComment, getCPUComment, getBottleneckComment } from '../utils/commentaryEngine';
@@ -17,10 +16,7 @@ interface ResultModalProps {
 export const ResultModal = ({ avgFps, minFps: _minFps, maxFps: _maxFps, totalObjects, cpuScore, onRestart, onClose }: ResultModalProps) => {
   const [displayedScore, setDisplayedScore] = useState(0);
   const [showContent, setShowContent] = useState(false);
-  const [copied, setCopied] = useState(false);
   const [specs, setSpecs] = useState<SystemSpecs | null>(null);
-  const [isGeneratingStory, setIsGeneratingStory] = useState(false);
-  const storyRef = useRef<HTMLDivElement>(null);
 
   const finalScore = calculateScore(totalObjects);
   const rankInfo = getRank(finalScore);
@@ -64,200 +60,10 @@ export const ResultModal = ({ avgFps, minFps: _minFps, maxFps: _maxFps, totalObj
     loadSpecs();
   }, []);
 
-  const copyScore = () => {
-    const rank = getRank(finalScore).rank;
-    const text = `🚀 Potato Or Beast Skorum: ${finalScore.toLocaleString()}!
-    
-🏆 Rank: ${rank}
-🎮 GPU: ${specs?.gpu || 'Bilinmiyor'}
-🧠 CPU Score: ${cpuScore ? cpuScore.toLocaleString() : 'N/A'}
-    
-Senin sistemin kaç puan alacak?
-#PotatoOrBeast #Benchmark`;
-    
-    navigator.clipboard.writeText(text);
-    setCopied(true);
-    setTimeout(() => setCopied(false), 2000);
-  };
-
-  const downloadStoryCard = async () => {
-    if (!storyRef.current) return;
-    
-    try {
-      setIsGeneratingStory(true);
-      await new Promise(r => setTimeout(r, 100));
-
-      const canvas = await html2canvas(storyRef.current, {
-        scale: 2,
-        backgroundColor: '#0a0a0a',
-        useCORS: true,
-        logging: false,
-      });
-
-      const image = canvas.toDataURL('image/png');
-      const link = document.createElement('a');
-      link.href = image;
-      link.download = `benchmark-score-${Date.now()}.png`;
-      link.click();
-    } catch (err) {
-      console.error('Story generation failed:', err);
-    } finally {
-      setIsGeneratingStory(false);
-    }
-  };
-
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center p-2 md:p-4">
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose} />
-      
-      {/* Hidden Result Card Template - CLEAN INLINE STYLES for html2canvas */}
-      <div 
-        ref={storyRef}
-        style={{
-          position: 'fixed',
-          top: 0,
-          left: '-9999px',
-          width: '600px',
-          height: '800px',
-          backgroundColor: '#0a0a0a',
-          color: '#ffffff',
-          fontFamily: 'Arial, sans-serif',
-          overflow: 'hidden',
-        }}
-      >
-        <div style={{
-          width: '100%',
-          height: '100%',
-          display: 'flex',
-          flexDirection: 'column',
-          alignItems: 'center',
-          justifyContent: 'space-between',
-          padding: '40px',
-          background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)',
-        }}>
-          
-          {/* Header */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: '14px', 
-              letterSpacing: '8px', 
-              color: '#666',
-              marginBottom: '8px',
-            }}>
-              POTATO OR BEAST
-            </div>
-            <div style={{ 
-              fontSize: '32px', 
-              fontWeight: 'bold',
-              color: '#00ff88',
-              letterSpacing: '4px',
-            }}>
-              BENCHMARK
-            </div>
-          </div>
-
-          {/* Score Section */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ 
-              fontSize: '80px', 
-              marginBottom: '4px',
-            }}>
-              {rankInfo.rankEmoji}
-            </div>
-            <div style={{ 
-              fontSize: '72px', 
-              fontWeight: 'bold',
-              color: '#00ff88',
-              letterSpacing: '2px',
-            }}>
-              {finalScore.toLocaleString()}
-            </div>
-            <div style={{ 
-              fontSize: '24px', 
-              fontWeight: 'bold',
-              color: '#00d4ff',
-              marginTop: '8px',
-              letterSpacing: '2px',
-            }}>
-              {rankInfo.rank}
-            </div>
-            <div style={{ 
-              fontSize: '14px', 
-              color: '#888',
-              marginTop: '4px',
-            }}>
-              {rankInfo.description}
-            </div>
-          </div>
-
-          {/* Stats Grid */}
-          <div style={{
-            width: '100%',
-            display: 'grid',
-            gridTemplateColumns: '1fr 1fr',
-            gap: '12px',
-          }}>
-            {/* GPU FPS */}
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #333',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>GPU FPS</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00ff88' }}>{Math.round(avgFps)}</div>
-            </div>
-            
-            {/* Render */}
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #333',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>RENDER</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00d4ff' }}>{(totalObjects/1000).toFixed(0)}K</div>
-            </div>
-            
-            {/* CPU */}
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #333',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>CPU SKORU</div>
-              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#b026ff' }}>{cpuScore ? (cpuScore/1000).toFixed(0) + 'K' : '-'}</div>
-            </div>
-            
-            {/* Hardware */}
-            <div style={{
-              backgroundColor: '#1a1a1a',
-              border: '1px solid #333',
-              borderRadius: '8px',
-              padding: '16px',
-              textAlign: 'center',
-            }}>
-              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>DONANIM</div>
-              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#ccc', lineHeight: '1.3' }}>{specs?.gpu || 'GPU'}</div>
-            </div>
-          </div>
-
-          {/* Footer */}
-          <div style={{ textAlign: 'center' }}>
-            <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>
-              • Potato Or Beast ? •
-            </div>
-            <div style={{ fontSize: '11px', color: '#444' }}>
-              System Engineered by Kutay
-            </div>
-          </div>
-        </div>
-      </div>
 
       {/* === COMPACT DASHBOARD LAYOUT === */}
       <div 
@@ -328,8 +134,8 @@ Senin sistemin kaç puan alacak?
                 <p className="font-orbitron text-lg font-bold text-cyber-purple">{cpuScore ? (cpuScore/1000).toFixed(0) + 'K' : '-'}</p>
               </div>
               
-              {/* Hardware - Full Text */}
-              <div className="bg-cyber-darker/60 p-2 rounded-lg border border-white/5">
+              {/* Hardware - Full Text - Centered */}
+              <div className="bg-cyber-darker/60 p-2 rounded-lg border border-white/5 text-center">
                 <p className="text-[9px] text-gray-500 uppercase">Donanım</p>
                 <p 
                   className="font-space-mono text-[10px] font-bold text-gray-300 leading-tight"
@@ -378,41 +184,13 @@ Senin sistemin kaç puan alacak?
               )}
             </div>
 
-            {/* Action Buttons - Compact Row */}
-            <div className={`flex gap-2 pt-2 border-t border-white/5 transition-all duration-700 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
-              <button 
-                onClick={downloadStoryCard}
-                disabled={isGeneratingStory}
-                className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded font-orbitron font-bold text-white text-xs hover:scale-105 transition-all flex items-center justify-center gap-1 disabled:opacity-50"
-              >
-                <span>📸</span>
-                <span>{isGeneratingStory ? '...' : 'SONUÇ KARTI'}</span>
-              </button>
-
-              <button 
-                onClick={copyScore}
-                className={`flex-1 px-3 py-2 border rounded font-orbitron font-bold text-xs transition-all flex items-center justify-center gap-1 ${
-                  copied 
-                    ? 'border-neon-green bg-neon-green/10 text-neon-green' 
-                    : 'border-gray-600 text-gray-300 hover:border-white hover:text-white'
-                }`}
-              >
-                {copied ? '✓' : '📋'} {copied ? 'OK' : 'KOPYALA'}
-              </button>
-              
+            {/* Single Action Button - Centered */}
+            <div className={`pt-2 border-t border-white/5 transition-all duration-700 ${showContent ? 'opacity-100' : 'opacity-0'}`}>
               <button 
                 onClick={onRestart}
-                className="px-3 py-2 bg-neon-green/10 border border-neon-green/30 hover:bg-neon-green/20 rounded text-neon-green font-bold transition-all text-xs"
-                title="Yeniden Test"
+                className="w-full px-4 py-3 bg-gradient-to-r from-neon-green/20 to-electric-blue/20 border border-neon-green/40 hover:border-neon-green hover:bg-neon-green/30 rounded-lg text-neon-green font-orbitron font-bold transition-all text-sm hover:scale-[1.02]"
               >
-                ↺ YENİDEN
-              </button>
-
-              <button 
-                onClick={onClose}
-                className="px-3 py-2 bg-white/5 hover:bg-white/10 rounded text-gray-400 hover:text-white font-bold transition-all text-xs"
-              >
-                ✕
+                ↺ YENİDEN TEST ET
               </button>
             </div>
           </div>
