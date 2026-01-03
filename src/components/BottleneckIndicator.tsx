@@ -18,28 +18,33 @@ interface AnalysisResult {
   recommendation?: string;
 }
 
-// Expected maximum scores for percentage calculation
-// These are calibrated based on high-end system benchmarks
-const MAX_EXPECTED_GPU_SCORE = 15000; // High-end GPU target
-const MAX_EXPECTED_CPU_SCORE = 20000; // High-end CPU target
+// Expected maximum scores for percentage calculation (FUTURE-PROOF VALUES)
+// These are calibrated to show meaningful progress bars across all hardware tiers
+// RTX 4090 class → ~80-100%, RTX 4060 class → ~45-50%, Entry GPUs → ~10-20%
+const MAX_EXPECTED_GPU_SCORE = 1000000; // 1 Million - Future-proof for next-gen hardware
+const MAX_EXPECTED_CPU_SCORE = 500000;  // 500K - High-end CPUs fill ~50-60%
 
 /**
  * Analyzes bottleneck based on actual test scores
+ * 
+ * NEW RATIO SYSTEM (Gaming-Accurate):
+ * In gaming PCs, GPU score should naturally be higher than CPU score.
+ * Raw Ratio = GPU_Score / CPU_Score
+ * 
+ * - Ratio 1.5 - 2.5: ✅ Perfect Gaming Balance (GPU working at full potential, CPU feeding it properly)
+ * - Ratio 2.5 - 3.0: ⚡ Mild CPU strain (still good but CPU starting to work hard)
+ * - Ratio > 3.0: ⚠️ CPU Bottleneck (CPU can't keep up with powerful GPU)
+ * - Ratio 1.0 - 1.5: 📊 Conservative balance (CPU has headroom)
+ * - Ratio < 1.0: ⚠️ GPU Insufficient (CPU is stronger, GPU is the weak link for games)
  */
 const analyzeScores = (gpuScore: number, cpuScore: number): AnalysisResult => {
-  // Calculate percentages based on max expected scores
+  // Calculate percentages based on max expected scores (for visual bars only)
   const gpuPercentage = Math.min(100, Math.round((gpuScore / MAX_EXPECTED_GPU_SCORE) * 100));
   const cpuPercentage = Math.min(100, Math.round((cpuScore / MAX_EXPECTED_CPU_SCORE) * 100));
   
-  // Normalize scores to same scale for ratio calculation
-  const normalizedGpu = gpuScore / MAX_EXPECTED_GPU_SCORE;
-  const normalizedCpu = cpuScore / MAX_EXPECTED_CPU_SCORE;
-  
-  // Calculate ratio
-  // ratio < 0.8: GPU is weaker relative to CPU (GPU bottleneck / CPU too powerful)
-  // ratio > 1.2: GPU is stronger relative to CPU (CPU bottleneck)
-  // 0.8 - 1.2: Balanced
-  const ratio = normalizedGpu / normalizedCpu;
+  // RAW RATIO - This is the actual GPU/CPU score ratio without normalization
+  // This correctly represents gaming system balance
+  const ratio = gpuScore / cpuScore;
   
   let status: BottleneckStatus = 'balanced';
   let severity: 'none' | 'mild' | 'severe' = 'none';
@@ -47,40 +52,49 @@ const analyzeScores = (gpuScore: number, cpuScore: number): AnalysisResult => {
   let description = '';
   let recommendation: string | undefined;
   
-  if (ratio < 0.5) {
-    // Severe GPU bottleneck - CPU is way more powerful
-    status = 'gpu_bottleneck';
-    severity = 'severe';
-    title = '🎮 GPU Darboğazı Tespit Edildi';
-    description = `İşlemciniz çok güçlü ama ekran kartınız yetişemiyor. GPU skoru (${gpuScore.toLocaleString()}) CPU skorunun (${cpuScore.toLocaleString()}) çok gerisinde.`;
-    recommendation = 'Daha güçlü bir ekran kartı ile dramatik performans artışı elde edebilirsiniz.';
-  } else if (ratio < 0.8) {
-    // Mild GPU bottleneck
-    status = 'gpu_bottleneck';
-    severity = 'mild';
-    title = '📊 GPU Limitli Sistem';
-    description = `Ekran kartınız sistemin limitleyici faktörü. Bu oyunlar için normal ve beklenen bir durum.`;
-    recommendation = 'Grafik ayarlarını optimize ederek daha yüksek FPS elde edebilirsiniz.';
-  } else if (ratio > 2.0) {
-    // Severe CPU bottleneck - GPU is way more powerful
-    status = 'cpu_bottleneck';
-    severity = 'severe';
-    title = '⚠️ Kritik CPU Darboğazı!';
-    description = `Ekran kartınız çok güçlü ama işlemciniz fren yapıyor! GPU skoru (${gpuScore.toLocaleString()}) CPU skorundan (${cpuScore.toLocaleString()}) çok yüksek.`;
-    recommendation = 'İşlemci yükseltmesi ile ekran kartınızın tam potansiyelini açığa çıkarabilirsiniz.';
-  } else if (ratio > 1.2) {
-    // Mild CPU bottleneck
-    status = 'cpu_bottleneck';
-    severity = 'mild';
-    title = '⚡ Hafif CPU Darboğazı';
-    description = `İşlemciniz ekran kartınızı tam besleyemiyor. Bazı CPU yoğun oyunlarda performans düşüşü yaşayabilirsiniz.`;
-    recommendation = 'Arka plan uygulamalarını kapatarak işlemci yükünü azaltabilirsiniz.';
-  } else {
-    // Balanced (0.8 - 1.2)
+  if (ratio >= 1.5 && ratio <= 2.5) {
+    // PERFECT GAMING BALANCE - GPU is appropriately stronger than CPU
+    // This is the IDEAL gaming scenario - GPU should be the workhorse
     status = 'balanced';
     severity = 'none';
-    title = '✅ Mükemmel Denge!';
-    description = `GPU (${gpuScore.toLocaleString()}) ve CPU (${cpuScore.toLocaleString()}) skorlarınız mükemmel uyum içinde. Sistemden maksimum verim alıyorsunuz.`;
+    title = '✅ Optimize Edilmiş Gaming Sistemi';
+    description = `Ekran kartınız tam potansiyelinde çalışıyor, işlemciniz onu rahatlıkla besliyor. GPU (${gpuScore.toLocaleString()}) / CPU (${cpuScore.toLocaleString()}) oranı ideale yakın.`;
+    recommendation = 'Sisteminiz oyunlar için mükemmel dengelenmiş. Tüm oyunlarda maksimum performans alabilirsiniz!';
+  } else if (ratio > 2.5 && ratio <= 3.0) {
+    // CPU starting to work harder - mild strain
+    status = 'balanced';
+    severity = 'mild';
+    title = '⚡ Güçlü Gaming Sistemi';
+    description = `GPU'nuz oldukça güçlü, CPU'nuz çoğu durumda yetişiyor. Bazı CPU yoğun oyunlarda hafif performans düşüşü görebilirsiniz.`;
+    recommendation = 'CPU-ağırlıklı oyunlarda (RTS, simulation) dikkatli olun, ama çoğu oyunda sorunsuz performans alırsınız.';
+  } else if (ratio > 3.0) {
+    // CPU BOTTLENECK - GPU is way too powerful for CPU
+    status = 'cpu_bottleneck';
+    severity = ratio > 4.0 ? 'severe' : 'mild';
+    title = ratio > 4.0 ? '🚨 Kritik CPU Darboğazı!' : '⚠️ CPU Darboğazı Tespit Edildi';
+    description = `İşlemciniz ekran kartınıza yetişemiyor. GPU skoru (${gpuScore.toLocaleString()}) CPU skorunun (${cpuScore.toLocaleString()}) ${ratio.toFixed(1)}x katı.`;
+    recommendation = 'İşlemci yükseltmesi ile ekran kartınızın tam gücünü açığa çıkarabilirsiniz.';
+  } else if (ratio >= 1.0 && ratio < 1.5) {
+    // Conservative balance - CPU has headroom, GPU could be stronger
+    status = 'balanced';
+    severity = 'none';
+    title = '📊 Dengeli Sistem';
+    description = `GPU ve CPU skorlarınız birbirine yakın. CPU'nuz GPU'nuzu rahatça besliyor, ancak GPU'nuz daha güçlü olabilirdi.`;
+    recommendation = 'Daha güçlü bir GPU ile daha yüksek grafik ayarlarında oynayabilirsiniz.';
+  } else if (ratio >= 0.7 && ratio < 1.0) {
+    // GPU slightly weaker than CPU - mild imbalance for gaming
+    status = 'gpu_bottleneck';
+    severity = 'mild';
+    title = '🎮 GPU Limitli Sistem';
+    description = `İşlemciniz güçlü ama ekran kartınız oyunlarda limitleyici faktör. GPU (${gpuScore.toLocaleString()}) CPU'dan (${cpuScore.toLocaleString()}) daha düşük skor aldı.`;
+    recommendation = 'Grafik ayarlarını düşürerek veya GPU yükselterek daha iyi performans elde edebilirsiniz.';
+  } else {
+    // GPU significantly weaker than CPU (ratio < 0.7)
+    status = 'gpu_bottleneck';
+    severity = 'severe';
+    title = '⚠️ GPU Yetersiz';
+    description = `İşlemciniz güçlü ama ekran kartınız oyunlar için zayıf kalıyor. GPU skoru (${gpuScore.toLocaleString()}) CPU skorunun (${cpuScore.toLocaleString()}) çok gerisinde.`;
+    recommendation = 'Ekran kartı yükseltmesi ile dramatik performans artışı elde edebilirsiniz.';
   }
   
   return {
@@ -364,9 +378,11 @@ export const BottleneckIndicator = ({ gpuScore, cpuScore }: BottleneckAnalysisPr
             </span>
             <span className="text-gray-600">|</span>
             <span className="text-gray-600">
-              {analysis.ratio < 0.8 ? '< 0.80 → GPU Yavaş' : 
-               analysis.ratio > 1.2 ? '> 1.20 → CPU Yavaş' : 
-               '0.80 - 1.20 → Dengeli'}
+              {analysis.ratio < 1.0 ? '< 1.0 → GPU Yetersiz' : 
+               analysis.ratio > 3.0 ? '> 3.0 → CPU Darboğazı' : 
+               analysis.ratio >= 1.5 && analysis.ratio <= 2.5 ? '1.5 - 2.5 → İdeal Gaming' :
+               analysis.ratio > 2.5 ? '2.5 - 3.0 → Güçlü Gaming' :
+               '1.0 - 1.5 → Dengeli'}
             </span>
           </div>
         </div>

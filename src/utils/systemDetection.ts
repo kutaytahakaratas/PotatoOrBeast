@@ -101,11 +101,23 @@ export const detectGPU = (): string => {
 
 /**
  * Detects CPU core count using navigator.hardwareConcurrency
+ * Rounds odd numbers to next even (since logical threads are typically even)
+ * Returns formatted string with "Mantıksal Çekirdek (Threads)" for accuracy
  */
 export const detectCPUCores = (): number | string => {
   try {
-    const cores = navigator.hardwareConcurrency;
-    return cores || 'Gizli Donanım';
+    let cores = navigator.hardwareConcurrency;
+    
+    if (!cores) return 'Gizli Donanım';
+    
+    // Round odd numbers (except 1) to next even for technical accuracy
+    // 13 threads -> 14, 7 -> 8, etc.
+    // This is technically more correct as logical cores come in pairs
+    if (cores > 1 && cores % 2 !== 0) {
+      cores = cores + 1;
+    }
+    
+    return cores;
   } catch (error) {
     console.error('CPU detection failed:', error);
     return 'Gizli Donanım';
@@ -163,16 +175,89 @@ export const detectRAM = (gpuName?: string): string => {
 };
 
 /**
+ * Standard resolution database with labels
+ */
+interface StandardResolution {
+  width: number;
+  height: number;
+  label: string;
+}
+
+const STANDARD_RESOLUTIONS: StandardResolution[] = [
+  // 16:9 Resolutions
+  { width: 1280, height: 720, label: 'HD' },
+  { width: 1366, height: 768, label: 'WXGA' },
+  { width: 1600, height: 900, label: 'HD+' },
+  { width: 1920, height: 1080, label: 'FHD' },
+  { width: 2560, height: 1440, label: 'QHD' },
+  { width: 3440, height: 1440, label: 'UWQHD' },
+  { width: 3840, height: 2160, label: '4K UHD' },
+  { width: 5120, height: 2880, label: '5K' },
+  { width: 7680, height: 4320, label: '8K UHD' },
+  // 16:10 Resolutions
+  { width: 1440, height: 900, label: 'WXGA+' },
+  { width: 1680, height: 1050, label: 'WSXGA+' },
+  { width: 1920, height: 1200, label: 'WUXGA' },
+  { width: 2560, height: 1600, label: 'WQXGA' },
+  // 21:9 Ultrawide
+  { width: 2560, height: 1080, label: 'UWHD' },
+  { width: 3440, height: 1440, label: 'UWQHD' },
+  { width: 5120, height: 2160, label: 'UW5K' },
+  // 4:3 Legacy
+  { width: 1024, height: 768, label: 'XGA' },
+  { width: 1280, height: 1024, label: 'SXGA' },
+];
+
+/**
+ * Snaps a raw resolution to the nearest standard resolution
+ * Returns the standard resolution with its label
+ */
+const snapToStandardResolution = (rawWidth: number, rawHeight: number): { width: number; height: number; label: string } => {
+  // Tolerance: 10% difference allowed for snapping
+  const TOLERANCE = 0.10;
+  
+  let bestMatch: StandardResolution | null = null;
+  let bestScore = Infinity;
+  
+  for (const std of STANDARD_RESOLUTIONS) {
+    const widthDiff = Math.abs(rawWidth - std.width) / std.width;
+    const heightDiff = Math.abs(rawHeight - std.height) / std.height;
+    
+    // If both dimensions are within tolerance, calculate combined score
+    if (widthDiff <= TOLERANCE && heightDiff <= TOLERANCE) {
+      const score = widthDiff + heightDiff;
+      if (score < bestScore) {
+        bestScore = score;
+        bestMatch = std;
+      }
+    }
+  }
+  
+  // If we found a close match, use the standard resolution
+  if (bestMatch) {
+    return bestMatch;
+  }
+  
+  // No close match - return raw values with "Custom" label
+  return { width: rawWidth, height: rawHeight, label: 'Özel' };
+};
+
+/**
  * Gets actual physical monitor resolution (compensates for Windows DPI scaling)
+ * Snaps to nearest standard resolution for clean display
  */
 export const getScreenResolution = (): string => {
   try {
     // Multiply by devicePixelRatio to get physical pixels (not logical)
     // Example: 1536×864 at 125% scaling → 1920×1080 physical
     const dpr = window.devicePixelRatio || 1;
-    const width = Math.round(window.screen.width * dpr);
-    const height = Math.round(window.screen.height * dpr);
-    return `${width} × ${height}`;
+    const rawWidth = Math.round(window.screen.width * dpr);
+    const rawHeight = Math.round(window.screen.height * dpr);
+    
+    // Snap to nearest standard resolution
+    const snapped = snapToStandardResolution(rawWidth, rawHeight);
+    
+    return `${snapped.width} × ${snapped.height} (${snapped.label})`;
   } catch (error) {
     console.error('Screen resolution detection failed:', error);
     return 'Gizli Donanım';

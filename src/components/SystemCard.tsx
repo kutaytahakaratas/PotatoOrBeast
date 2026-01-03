@@ -58,8 +58,8 @@ export const SystemCard = () => {
     },
     {
       icon: '⚡',
-      label: 'CPU', // Shortened label
-      value: typeof specs.cpuCores === 'number' ? `${specs.cpuCores} Core` : specs.cpuCores,
+      label: 'CPU',
+      value: typeof specs.cpuCores === 'number' ? `${specs.cpuCores} Mantıksal Çekirdek` : specs.cpuCores,
       color: 'text-electric-blue',
       borderColor: 'border-electric-blue/20',
     },

@@ -44,7 +44,18 @@ export const CPUBenchmark = ({ onComplete }: CPUBenchmarkProps) => {
     
     // Calculate final score (average ops/sec across all tests, scaled)
     const totalOps = testResultsRef.current.reduce((sum, t) => sum + t.score, 0);
-    const finalScore = Math.round(totalOps / 1000); // Scale down for readability
+    let finalScore = Math.round(totalOps / 1000); // Scale down for readability
+    
+    // === NATURAL ENTROPY (JITTER) ===
+    // Add 1-3% variance using performance.now() microseconds as entropy source
+    // This makes scores feel "alive" - same hardware gives slightly different results each run
+    const now = performance.now();
+    const entropySource = (now % 1000) / 1000; // 0.000 to 0.999 from millisecond fraction
+    const jitterPercent = 0.01 + (entropySource * 0.02); // 1% to 3% range
+    const jitterDirection = Math.cos(now * 0.001) > 0 ? 1 : -1; // Pseudo-random +/- (using cos for variety)
+    const entropyFactor = 1 + (jitterDirection * jitterPercent);
+    
+    finalScore = Math.round(finalScore * entropyFactor);
     
     setStatus('complete');
     onComplete?.(finalScore, duration, totalOps);

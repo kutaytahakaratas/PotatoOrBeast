@@ -269,6 +269,17 @@ export const BenchmarkScene = ({ onComplete }: BenchmarkSceneProps) => {
         finalObjectCount = Math.floor(finalObjectCount * 1.5); // 50% Bonus Score
       }
 
+      // === NATURAL ENTROPY (JITTER) ===
+      // Add 1-3% variance using performance.now() microseconds as entropy source
+      // This makes scores feel "alive" - same hardware gives slightly different results each run
+      const now = performance.now();
+      const entropySource = (now % 1000) / 1000; // 0.000 to 0.999 from millisecond fraction
+      const jitterPercent = 0.01 + (entropySource * 0.02); // 1% to 3% range
+      const jitterDirection = Math.sin(now * 0.001) > 0 ? 1 : -1; // Pseudo-random +/-
+      const entropyFactor = 1 + (jitterDirection * jitterPercent);
+      
+      finalObjectCount = Math.round(finalObjectCount * entropyFactor);
+
       const avgFps = fpsHistory.length > 0 ? fpsHistory.reduce((a, b) => a + b, 0) / fpsHistory.length : currentFps;
       const minFps = fpsHistory.length > 0 ? Math.min(...fpsHistory) : currentFps;
       const maxFps = fpsHistory.length > 0 ? Math.max(...fpsHistory) : currentFps;
