@@ -111,68 +111,151 @@ Senin sistemin kaç puan alacak?
       {/* Backdrop */}
       <div className="absolute inset-0 bg-black/95 backdrop-blur-md" onClick={onClose} />
       
-      {/* Hidden Story Card Template */}
-      <div className="fixed top-0 left-[-9999px] w-[1080px] h-[1920px] bg-black text-white overflow-hidden" ref={storyRef}>
-        <div className="relative w-full h-full flex flex-col items-center justify-between p-20 bg-gradient-to-br from-gray-900 via-black to-blue-900">
-           <div className="absolute inset-0 cyber-grid-bg opacity-30"></div>
-           
-           <div className="relative z-10 text-center space-y-8 mt-20">
-             <div className="font-orbitron text-4xl tracking-[0.5em] text-gray-400 opacity-60">POTATO OR BEAST</div>
-             <h1 className="font-orbitron text-8xl font-black text-transparent bg-clip-text bg-gradient-to-r from-neon-green to-electric-blue drop-shadow-[0_0_30px_rgba(57,255,20,0.5)]">
-               BENCHMARK
-             </h1>
-           </div>
+      {/* Hidden Result Card Template - CLEAN INLINE STYLES for html2canvas */}
+      <div 
+        ref={storyRef}
+        style={{
+          position: 'fixed',
+          top: 0,
+          left: '-9999px',
+          width: '600px',
+          height: '800px',
+          backgroundColor: '#0a0a0a',
+          color: '#ffffff',
+          fontFamily: 'Arial, sans-serif',
+          overflow: 'hidden',
+        }}
+      >
+        <div style={{
+          width: '100%',
+          height: '100%',
+          display: 'flex',
+          flexDirection: 'column',
+          alignItems: 'center',
+          justifyContent: 'space-between',
+          padding: '40px',
+          background: 'linear-gradient(180deg, #0a0a0a 0%, #1a1a2e 50%, #0a0a0a 100%)',
+        }}>
+          
+          {/* Header */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '14px', 
+              letterSpacing: '8px', 
+              color: '#666',
+              marginBottom: '8px',
+            }}>
+              POTATO OR BEAST
+            </div>
+            <div style={{ 
+              fontSize: '32px', 
+              fontWeight: 'bold',
+              color: '#00ff88',
+              letterSpacing: '4px',
+            }}>
+              BENCHMARK
+            </div>
+          </div>
 
-           <div className="relative z-10 flex flex-col items-center gap-10">
-             <div className="text-4xl font-space-mono text-electric-blue uppercase tracking-widest border border-electric-blue/30 px-8 py-2 rounded-full bg-black/40 backdrop-blur-md">
-               Sistem Performans Skoru
-             </div>
-             <div className="font-orbitron text-[280px] leading-none font-bold text-white drop-shadow-[0_0_100px_rgba(57,255,20,0.4)]">
-               {finalScore.toLocaleString()}
-             </div>
-             <div className="flex items-center gap-6 px-12 py-6 bg-gradient-to-r from-neon-green/20 to-transparent border-l-8 border-neon-green backdrop-blur-xl rounded-r-3xl">
-               <span className="text-8xl">{rankInfo.rankEmoji}</span>
-               <div className="text-left">
-                 <div className="font-orbitron text-6xl font-bold text-neon-green text-shadow-glow">
-                   {rankInfo.rank}
-                 </div>
-                 <div className="font-space-mono text-3xl text-gray-300 mt-2">GPU EFSANESİ</div>
-               </div>
-             </div>
-           </div>
+          {/* Score Section */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ 
+              fontSize: '80px', 
+              marginBottom: '4px',
+            }}>
+              {rankInfo.rankEmoji}
+            </div>
+            <div style={{ 
+              fontSize: '72px', 
+              fontWeight: 'bold',
+              color: '#00ff88',
+              letterSpacing: '2px',
+            }}>
+              {finalScore.toLocaleString()}
+            </div>
+            <div style={{ 
+              fontSize: '24px', 
+              fontWeight: 'bold',
+              color: '#00d4ff',
+              marginTop: '8px',
+              letterSpacing: '2px',
+            }}>
+              {rankInfo.rank}
+            </div>
+            <div style={{ 
+              fontSize: '14px', 
+              color: '#888',
+              marginTop: '4px',
+            }}>
+              {rankInfo.description}
+            </div>
+          </div>
 
-           <div className="relative z-10 w-full bg-black/40 backdrop-blur-xl border border-white/10 rounded-3xl p-12 space-y-8">
-              <div className="flex items-center gap-8">
-                <div className="p-6 bg-blue-500/20 rounded-2xl text-5xl">🎮</div>
-                <div>
-                  <div className="text-2xl text-gray-400 font-space-mono uppercase">Grafik Kartı</div>
-                  <div className="text-4xl font-bold text-white font-orbitron mt-2">{specs?.gpu || 'Tespit Ediliyor...'}</div>
-                </div>
-              </div>
-              <div className="w-full h-px bg-white/10"></div>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-8">
-                  <div className="p-6 bg-purple-500/20 rounded-2xl text-5xl">⚡</div>
-                  <div>
-                    <div className="text-2xl text-gray-400 font-space-mono uppercase">CPU Skoru</div>
-                    <div className="text-4xl font-bold text-white font-orbitron mt-2">{cpuScore ? cpuScore.toLocaleString() : 'N/A'}</div>
-                  </div>
-                </div>
-                
-                <div className="flex items-center gap-8">
-                  <div className="p-6 bg-green-500/20 rounded-2xl text-5xl">🧠</div>
-                  <div>
-                    <div className="text-2xl text-gray-400 font-space-mono uppercase">RAM</div>
-                    <div className="text-4xl font-bold text-white font-orbitron mt-2">{specs?.ram || '...'}</div>
-                  </div>
-                </div>
-              </div>
-           </div>
+          {/* Stats Grid */}
+          <div style={{
+            width: '100%',
+            display: 'grid',
+            gridTemplateColumns: '1fr 1fr',
+            gap: '12px',
+          }}>
+            {/* GPU FPS */}
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: '8px',
+              padding: '16px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>GPU FPS</div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00ff88' }}>{Math.round(avgFps)}</div>
+            </div>
+            
+            {/* Render */}
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: '8px',
+              padding: '16px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>RENDER</div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#00d4ff' }}>{(totalObjects/1000).toFixed(0)}K</div>
+            </div>
+            
+            {/* CPU */}
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: '8px',
+              padding: '16px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>CPU SKORU</div>
+              <div style={{ fontSize: '28px', fontWeight: 'bold', color: '#b026ff' }}>{cpuScore ? (cpuScore/1000).toFixed(0) + 'K' : '-'}</div>
+            </div>
+            
+            {/* Hardware */}
+            <div style={{
+              backgroundColor: '#1a1a1a',
+              border: '1px solid #333',
+              borderRadius: '8px',
+              padding: '16px',
+              textAlign: 'center',
+            }}>
+              <div style={{ fontSize: '11px', color: '#666', marginBottom: '4px' }}>DONANIM</div>
+              <div style={{ fontSize: '12px', fontWeight: 'bold', color: '#ccc', lineHeight: '1.3' }}>{specs?.gpu || 'GPU'}</div>
+            </div>
+          </div>
 
-           <div className="relative z-10 text-center opacity-60 mb-10">
-              <p className="font-space-mono text-3xl text-gray-400">• Potato Or Beast ? •</p>
-              <p className="font-orbitron text-2xl text-neon-green mt-4">System Engineered by Kutay</p>
-           </div>
+          {/* Footer */}
+          <div style={{ textAlign: 'center' }}>
+            <div style={{ fontSize: '14px', color: '#555', marginBottom: '4px' }}>
+              • Potato Or Beast ? •
+            </div>
+            <div style={{ fontSize: '11px', color: '#444' }}>
+              System Engineered by Kutay
+            </div>
+          </div>
         </div>
       </div>
 
@@ -303,7 +386,7 @@ Senin sistemin kaç puan alacak?
                 className="flex-1 px-3 py-2 bg-gradient-to-r from-purple-600 to-pink-600 rounded font-orbitron font-bold text-white text-xs hover:scale-105 transition-all flex items-center justify-center gap-1 disabled:opacity-50"
               >
                 <span>📸</span>
-                <span>{isGeneratingStory ? '...' : 'HİKAYE'}</span>
+                <span>{isGeneratingStory ? '...' : 'SONUÇ KARTI'}</span>
               </button>
 
               <button 
